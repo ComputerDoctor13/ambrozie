@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exantha — prognoză de polen</title>
+    <link rel="stylesheet" href="stil.css">
+</head>
+<body>
+<div class="exantha-app">
+    <div class="top-bar">
+        <div class="brand-name">ExanthaPolen <span>* & alergii</span></div>
+        <div class="lang-selector">
+            <button onclick="setLanguage('ro')">RO</button> | <button onclick="setLanguage('en')">EN</button>
+        </div>
+    </div>
+    <h1 id="main-headline">Respiră informat.</h1>
+    <p id="main-sub" class="subtitle">Prognoze pentru polen adaptate locației tale, prezentate simplu.</p>
+    <button class="btn-location" onclick="getLocation()">⌖ <span id="btn-text">Folosește locația mea</span></button>
+    <div class="data-panel">
+        <div id="panel-tag" class="panel-title">Ambrozie acum</div>
+        <div class="gauge-container">
+            <svg width="200" height="110">
+                <path d="M 20 90 A 80 80 0 0 1 50 30" fill="none" stroke="#4CAF50" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#FFC107" stroke-width="12" />
+                <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#FF9800" stroke-width="12" />
+                <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#F44336" stroke-width="12" stroke-linecap="round"/>
+                <g id="needle-group">
+                    <line x1="100" y1="90" x2="20" y2="90" stroke="#333333" stroke-width="4" stroke-linecap="round" />
+                    <circle cx="100" cy="90" r="6" fill="#333333" />
+                </g>
+            </svg>
+        </div>
+        <div class="value-display"><span id="pollen-number">--</span> <span class="unit" id="unit-text">grăuncioare/m³</span></div>
+        <div id="status-tag" class="status-badge" style="background-color: #999999;">Se încarcă...</div>
+    </div>
+    <div class="footer-notice" id="footer-text">Date securizate preluate prin Open-Meteo CAMS.</div>
+</div>
+<script>
+    var currentLang = 'ro'; var lastPollenValue = 0;
+    var translations = {
+        ro: { headline: "Respiră informat.", sub: "Prognoze adaptate locației tale.", btn: "Folosește locația mea", panel: "Ambrozie acum", unit: "grăuncioare/m³", loading: "Se încarcă...", none: "Inexistent", low: "Scăzut", med: "Mediu", high: "Critic" },
+        en: { headline: "Breathe informed.", sub: "Forecasts tailored to your location.", btn: "Use my location", panel: "Ragweed now", unit: "grains/m³", loading: "Loading...", none: "None", low: "Low", med: "Medium", high: "Critical" }
+    };
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.getElementById('main-headline').innerText = translations[lang].headline;
+        document.getElementById('main-sub').innerText = translations[lang].sub;
+        document.getElementById('btn-text').innerText = translations[lang].btn;
+        document.getElementById('panel-tag').innerText = translations[lang].panel;
+        document.getElementById('unit-text').innerText = translations[lang].unit;
+        interpretPollen(lastPollenValue);
+    }
+    function getLocation() {
+        document.getElementById('status-tag').innerText = translations[currentLang].loading;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) { fetchPollen(pos.coords.latitude, pos.coords.longitude); }, function() { fetchPollen(44.43, 26.10); });
+        } else { fetchPollen(44.43, 26.10); }
+    }
+    function fetchPollen(lat, lon) {
+        var url = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
+        fetch(url).then(function(res) { return res.json(); }).then(function(data) {
+            var now = new Date();
+            var currentHourStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + 'T' + String(now.getHours()).padStart(2,'0') + ':00';
+            var index = data.hourly.time.indexOf(currentHourStr);
+            lastPollenValue = data.hourly.ragweed_pollen[index >= 0 ? index : 0] || 0;
+            document.getElementById('pollen-number').innerText = lastPollenValue.toFixed(1) + ' ';
+            interpretPollen(lastPollenValue);
+            var degrees = (Math.min(lastPollenValue, 60) / 60) * 180;
+            document.getElementById('needle-group').setAttribute('transform', 'rotate(' + degrees + ', 100, 90)');
+        }).catch(function() { document.getElementById('status-tag').innerText = "API Error"; });
+    }
+    function interpretPollen(val) {
+        var b = document.getElementById('status-tag');
+        if (val >= 50) { b.innerText = translations[currentLang].high; b.style.backgroundColor = "#F44336"; }
+        else if (val >= 10) { b.innerText = translations[currentLang].med; b.style.backgroundColor = "#FF9800"; }
+        else if (val >= 1) { b.innerText = translations[currentLang].low; b.style.backgroundColor = "#FFC107"; }
+        else { b.innerText = translations[currentLang].none; b.style.backgroundColor = "#4CAF50"; }
+    }
+    window.onload = function() { setLanguage('ro'); getLocation(); };
+</script>
+</body>
+</html>

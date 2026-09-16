@@ -1,0 +1,33 @@
+:root {
+    --bg-color: #f5f7fb;
+    --card-bg: #ffffff;
+    --text-main: #222222;
+    --text-sub: #666666;
+    --accent-blue: #007bff;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px;
+    display: flex; justify-content: center; align-items: center; min-height: 100vh;
+}
+.exantha-app {
+    background: var(--card-bg); width: 100%; max-width: 400px; border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); padding: 24px; box-sizing: border-box;
+}
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.brand-name { font-size: 20px; font-weight: 800; }
+.brand-name span { font-weight: 400; font-size: 14px; color: var(--text-sub); }
+.lang-selector button { background: none; border: none; font-weight: bold; color: var(--accent-blue); cursor: pointer; }
+h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px 0; }
+.subtitle { color: var(--text-sub); font-size: 14px; margin: 0 0 24px 0; }
+.btn-location {
+    background-color: #f0f3f8; border: none; width: 100%; padding: 14px; border-radius: 12px;
+    font-size: 15px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 24px;
+}
+.data-panel { background: #fafbfc; border: 1px solid #edf0f5; border-radius: 16px; padding: 20px; text-align: center; }
+.panel-title { font-size: 14px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; margin-bottom: 12px; }
+.gauge-container { width: 200px; height: 110px; margin: 0 auto; }
+.value-display { font-size: 36px; font-weight: 800; margin: 10px 0 5px 0; }
+.unit { font-size: 14px; color: var(--text-sub); }
+.status-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; color: white; margin-top: 5px; }
+.footer-notice { font-size: 12px; color: var(--text-sub); border-top: 1px solid #edf0f5; padding-top: 16px; margin-top: 24px; }
