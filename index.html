@@ -57,27 +57,20 @@
             navigator.geolocation.getCurrentPosition(function(pos) { fetchPollen(pos.coords.latitude, pos.coords.longitude); }, function() { fetchPollen(44.43, 26.10); });
         } else { fetchPollen(44.43, 26.10); }
     }
-    function fetchPollen(lat, lon) {
-        var url = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
-        fetch(url).then(function(res) { return res.json(); }).then(function(data) {
+        function fetchPollen(lat, lon) {
+        var apiUrl = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
+        var proxyUrl = 'https://allorigins.win' + encodeURIComponent(apiUrl);
+        
+        fetch(proxyUrl).then(function(res) { return res.json(); }).then(function(wrapper) {
+            var data = JSON.parse(wrapper.contents);
             var now = new Date();
             var currentHourStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + 'T' + String(now.getHours()).padStart(2,'0') + ':00';
             var index = data.hourly.time.indexOf(currentHourStr);
             lastPollenValue = data.hourly.ragweed_pollen[index >= 0 ? index : 0] || 0;
+            
             document.getElementById('pollen-number').innerText = lastPollenValue.toFixed(1) + ' ';
             interpretPollen(lastPollenValue);
             var degrees = (Math.min(lastPollenValue, 60) / 60) * 180;
             document.getElementById('needle-group').setAttribute('transform', 'rotate(' + degrees + ', 100, 90)');
         }).catch(function() { document.getElementById('status-tag').innerText = "API Error"; });
     }
-    function interpretPollen(val) {
-        var b = document.getElementById('status-tag');
-        if (val >= 50) { b.innerText = translations[currentLang].high; b.style.backgroundColor = "#F44336"; }
-        else if (val >= 10) { b.innerText = translations[currentLang].med; b.style.backgroundColor = "#FF9800"; }
-        else if (val >= 1) { b.innerText = translations[currentLang].low; b.style.backgroundColor = "#FFC107"; }
-        else { b.innerText = translations[currentLang].none; b.style.backgroundColor = "#4CAF50"; }
-    }
-    window.onload = function() { setLanguage('ro'); getLocation(); };
-</script>
-</body>
-</html>
