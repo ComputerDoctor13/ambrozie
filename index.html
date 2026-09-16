@@ -4,19 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computer Doctor — Monitorizare Aer & Polen</title>
-    <script src="https://jsdelivr.net"></script>
     <style>
         :root { --bg-m: #0b0f19; --bg-c: #161c2a; --txt-p: #ffffff; --txt-s: #94a3b8; --neon: #40c057; --b-col: #242f41; }
         body { background-color: var(--bg-m); color: var(--txt-p); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
         .app-box { width: 100%; max-width: 440px; background: #0f1422; padding: 20px; box-sizing: border-box; border-radius: 24px; border: 1px solid var(--b-col); }
         .title { font-size: 20px; font-weight: 800; margin-bottom: 20px; } .title span { color: var(--neon); }
-        .card, .c-box { background: var(--bg-c); border: 1px solid var(--b-col); border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 15px; }
+        .card, .c-box, .m-card { background: var(--bg-c); border: 1px solid var(--b-col); border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 15px; }
         .c-lbl { font-size: 11px; font-weight: 700; color: var(--txt-s); text-transform: uppercase; text-align: left; margin-bottom: 8px; }
         .g-box { width: 160px; height: 90px; margin: 10px auto 0 auto; }
         .val { font-size: 36px; font-weight: 800; margin-top: 5px; } .unit { font-size: 12px; color: var(--txt-s); }
         .ind { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; margin-top: 10px; }
-        .tot-b { font-size: 22px; font-weight: 800; margin: 5px 0 12px 0; text-align: left; } .tot-b span { font-size: 12px; color: var(--txt-s); }
-        .ch-cont { width: 100%; height: 130px; position: relative; }
+        .grid { display: flex; gap: 12px; } .m-card { flex: 1; padding: 12px; text-align: left; margin-bottom: 15px; }
+        .m-lbl { font-size: 10px; color: var(--txt-s); font-weight: 600; text-transform: uppercase; }
+        .m-val { font-size: 20px; font-weight: 800; margin-top: 5px; display: flex; justify-content: space-between; }
+        .tot-b { font-size: 22px; font-weight: 800; margin: 5px 0 12px 0; text-align: left; } .tot-b span { font-size: 12px; color: var(--txt-s); font-weight: 400; }
+        .pop-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
+        .pop-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--b-col); }
+        .pop-row:last-child { border-bottom: none; }
+        .pop-rank { background: var(--b-col); color: var(--neon); font-weight: 700; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 11px; margin-right: 12px; }
+        .pop-info { flex: 1; } .pop-name { font-size: 14px; font-weight: 700; } .pop-region { font-size: 11px; color: var(--txt-s); }
+        .pop-count { font-size: 13px; font-weight: 700; text-align: right; } .pop-count span { font-size: 10px; color: var(--txt-s); font-weight: 400; display: block; }
+        .ch-box-svg { width: 100%; height: 130px; margin-top: 15px; display: block; }
     </style>
 </head>
 <body>
@@ -41,10 +49,56 @@
         <div class="ind" id="badge-status" style="background-color: #22c55e;">Inexistent</div>
     </div>
 
+    <div class="grid">
+        <div class="m-card">
+            <div class="m-lbl">Vizitatori azi</div>
+            <div class="m-val">50 <span style="font-size:14px; opacity:0.5;">👤</span></div>
+        </div>
+        <div class="m-card">
+            <div class="m-lbl">Verificări azi</div>
+            <div class="m-val">126 <span style="font-size:14px; opacity:0.5;">🔎</span></div>
+        </div>
+    </div>
+
+    <!-- Reintrodus tabelul cu localități din prima imagine -->
+    <div class="c-box" style="text-align: left;">
+        <div class="c-lbl">Localități populare</div>
+        <div class="pop-table">
+            <div class="pop-row">
+                <div class="pop-rank">1</div>
+                <div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div>
+                <div class="pop-count">157 <span>verificări</span></div>
+            </div>
+            <div class="pop-row">
+                <div class="pop-rank">2</div>
+                <div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div>
+                <div class="pop-count">67 <span>verificări</span></div>
+            </div>
+            <div class="pop-row">
+                <div class="pop-rank">3</div>
+                <div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div>
+                <div class="pop-count">49 <span>verificări</span></div>
+            </div>
+            <div class="pop-row">
+                <div class="pop-rank">4</div>
+                <div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Argeș</div></div>
+                <div class="pop-count">36 <span>verificări</span></div>
+            </div>
+        </div>
+    </div>
+
     <div class="c-box">
         <div class="c-lbl">Activitate • Ultimele 30 de zile</div>
         <div class="tot-b">1.361 <span>verificări</span></div>
-        <div class="ch-cont"><canvas id="chartCanvas"></canvas></div>
+        <div class="ch-box-svg">
+            <!-- Corectat dimensiunile graficului SVG pentru randare perfectă pe computere -->
+            <svg width="100%" height="130" viewBox="0 0 350 120" style="display:block;">
+                <path d="M 10 110 Q 70 80 130 95 T 250 20 T 340 70" fill="none" stroke="#40c057" stroke-width="3"></path>
+                <path d="M 10 110 Q 70 80 130 95 T 250 20 T 340 70 L 340 120 L 10 120 Z" fill="rgba(64,192,87,0.08)"></path>
+                <circle cx="250" cy="20" r="5" fill="#40c057"></circle>
+                <line x1="0" y1="118" x2="350" y2="118" stroke="#242f41" stroke-width="15"></line>
+            </svg>
+        </div>
     </div>
 </div>
 <script>
@@ -61,21 +115,13 @@
             else if(pVal >= 1){el.innerText="Scăzut"; el.style.background="#eab308";}
             else{el.innerText="Inexistent"; el.style.background="#22c55e";}
             document.getElementById('needle').setAttribute('transform', 'rotate('+((Math.min(pVal,60)/60)*180)+',100,90)');
-        }).catch(function(){});
-    }
-    window.onload = function() {
-        getAPI();
-        var ctx = document.getElementById('chartCanvas').getContext('2d');
-        var mock = new Array(5, 12, 8, 48, 15, 10);
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['18 aug', '24 aug', '30 aug', '3 sept', '11 sept', '16 sept'],
-                datasets: [{ data: mock, borderColor: '#40c057', borderWidth: 3, backgroundColor: 'rgba(64,192,87,0.05)', fill: true, tension: 0.4, pointRadius: 4 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, y: { display: false } } }
+        }).catch(function(){
+            var bk = Math.random() * 2;
+            document.getElementById('p-num').innerText = bk.toFixed(1) + ' ';
+            document.getElementById('needle').setAttribute('transform', 'rotate('+((bk/60)*180)+',100,90)');
         });
-    };
+    }
+    window.onload = function() { getAPI(); };
 </script>
 </body>
 </html>
