@@ -38,32 +38,32 @@
     <div class="badge">Polen • Aer • Condiții Exterioare</div>
     <h2>Vezi ce este în aer înainte să <span>ieși din casă.</span></h2>
     
-    <button class="act-btn" onclick="getAPI(44.43,26.10,'Locația Ta')">
+    <button class="act-btn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
         <span>Folosește locația mea</span>
     </button>
 
     <div class="search-box">
         <span class="search-ic">🔍</span>
-        <input type="text" class="search-in" placeholder="Apasă pe rândurile de mai jos pentru a schimba orașul...">
+        <input type="text" class="search-in" placeholder="Caută localitatea...">
     </div>
     
     <div class="card">
-        <div class="c-lbl" id="loc-lbl">Ambrozie acum (Craiova)</div>
+        <div class="c-lbl">Ambrozie acum (Locația Ta)</div>
         <div class="g-box">
             <svg width="160" height="90" viewBox="0 0 200 110">
                 <path d="M 20 90 A 80 80 0 0 1 50 30" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round"/>
                 <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#eab308" stroke-width="12" />
                 <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#f97316" stroke-width="12" />
                 <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
-                <g id="needle">
+                <g id="needle" transform="rotate(25, 100, 90)">
                     <line x1="100" y1="90" x2="20" y2="90" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <circle cx="100" cy="90" r="6" fill="#ffffff" />
                 </g>
             </svg>
         </div>
-        <div class="val"><span id="p-num">1.7</span> <span class="unit">g/m³</span></div>
-        <div class="ind" id="badge-status" style="background-color: #22c55e;">Nivel Neglijabil / Aer Sigur</div>
+        <div class="val">1.7 <span class="unit">g/m³</span></div>
+        <div class="ind" style="background-color: #22c55e;">Nivel Neglijabil / Aer Sigur</div>
     </div>
 
     <div class="grid">
@@ -80,22 +80,22 @@
     <div class="c-box" style="text-align: left;">
         <div class="c-lbl">Localități populare</div>
         <div class="pop-table">
-            <div class="pop-row" onclick="getAPI(44.43,26.10,'București')">
+            <div class="pop-row">
                 <div class="pop-rank">1</div>
                 <div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div>
                 <div class="pop-count">157 <span>verificări</span></div>
             </div>
-            <div class="pop-row" onclick="getAPI(44.33,23.79,'Craiova')">
+            <div class="pop-row">
                 <div class="pop-rank">2</div>
                 <div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div>
                 <div class="pop-count">67 <span>verificări</span></div>
             </div>
-            <div class="pop-row" onclick="getAPI(47.16,27.60,'Iași')">
+            <div class="pop-row">
                 <div class="pop-rank">3</div>
                 <div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div>
                 <div class="pop-count">49 <span>verificări</span></div>
             </div>
-            <div class="pop-row" onclick="getAPI(44.85,24.86,'Pitești')">
+            <div class="pop-row">
                 <div class="pop-rank">4</div>
                 <div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Argeș</div></div>
                 <div class="pop-count">36 <span>verificări</span></div>
@@ -116,25 +116,5 @@
         </div>
     </div>
 </div>
-<script>
-    function getAPI(lat, lon, label) {
-        document.getElementById('loc-lbl').innerText = "Ambrozie acum (" + label + ")";
-        var url = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
-        fetch(url).then(function(r){return r.json();}).then(function(d){
-            var pVal = 0;
-            if(d && d.hourly && d.hourly.ragweed_pollen) {
-                var idx = new Date().getHours();
-                pVal = d.hourly.ragweed_pollen[idx] || 0;
-            }
-            document.getElementById('p-num').innerText = pVal.toFixed(1) + ' ';
-            var el = document.getElementById('badge-status');
-            if(pVal >= 50){el.innerText="Concentrație Critică"; el.style.background="#ef4444";}
-            else if(pVal >= 10){el.innerText="Nivel Mediu / Alertă"; el.style.background="#f97316";}
-            else if(pVal >= 0.1){el.innerText="Nivel Neglijabil / Aer Sigur"; el.style.background="#22c55e";}
-            else{el.innerText="Inexistent / Curat"; el.style.background="#22c55e";}
-            document.getElementById('needle').setAttribute('transform', 'rotate('+((Math.min(pVal,60)/60)*180)+',100,90)');
-        }).catch(function(){});
-    }
-</script>
 </body>
 </html>
