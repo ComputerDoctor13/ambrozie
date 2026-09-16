@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computer Doctor — Monitorizare Aer & Polen</title>
-    <!-- Adăugare Iconiță Oficială compatibilă 100% cu ecranele Retina Apple de iPhone -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzBiMGYxOSIvPjxwYXRoIGQ9Ik05MCAxNXYxNTBNNjAgMTAwaDYwTTcwIDcwaDQwTTgwIDQwaDIwTTcwIDU1bDIwLTIwIDIwIDIwTTU1IDg1bDM1LTI1IDM1IDI1TTQwIDExNWw1MC0zMCA1MCAzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNDBjMDU3IiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==">
     <style>
         :root { --bg-m: #0b0f19; --bg-c: #161c2a; --txt-p: #ffffff; --txt-s: #94a3b8; --neon: #40c057; --b-col: #242f41; }
         body { background-color: var(--bg-m); color: var(--txt-p); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
@@ -55,7 +53,7 @@
                 <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#eab308" stroke-width="12" />
                 <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#f97316" stroke-width="12" />
                 <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
-                <g id="needle" transform="rotate(0, 100, 90)">
+                <g id="needle" style="transform-origin: 100px 90px; transition: transform 0.5s ease-out; transform: rotate(0deg);">
                     <line x1="100" y1="90" x2="20" y2="90" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <circle cx="100" cy="90" r="6" fill="#ffffff" />
                 </g>
@@ -109,17 +107,18 @@
         var txt = document.getElementById('s-box').value;
         if(!txt) return;
         document.getElementById('badge-status').innerText = "Căutare...";
-        fetch('https://open-meteo.com' + encodeURIComponent(txt) + '&count=1&language=ro')
-        .then(function(r){return r.json();}).then(function(d){
+        var geoUrl = 'https://open-meteo.com' + encodeURIComponent(txt) + '&count=1&language=ro';
+        fetch(geoUrl).then(function(r){return r.json();}).then(function(d){
             if(d.results && d.results.length > 0) {
-                getAPI(d.results[0].latitude, d.results[0].longitude, d.results[0].name);
+                var res = d.results[0];
+                getAPI(res.latitude, res.longitude, res.name);
             } else { document.getElementById('badge-status').innerText = "Oraș negăsit"; }
         });
     }
     function getAPI(lat, lon, label) {
         document.getElementById('loc-lbl').innerText = "Ambrozie acum (" + label + ")";
-        fetch('https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1')
-        .then(function(r){return r.json();}).then(function(d){
+        var queryUrl = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
+        fetch(queryUrl).then(function(r){return r.json();}).then(function(d){
             var pVal = 0;
             if(d && d.hourly) {
                 var idx = new Date().getHours();
@@ -132,7 +131,7 @@
             else if(pVal >= 0.1){el.innerText="Nivel Neglijabil / Aer Sigur"; el.style.background="#22c55e";}
             else{el.innerText="Inexistent / Curat"; el.style.background="#22c55e";}
             var degrees = (Math.min(pVal, 60) / 60) * 180;
-            document.getElementById('needle').setAttribute('transform', 'rotate('+degrees+',100,90)');
+            document.getElementById('needle').style.transform = 'rotate(' + degrees + 'deg)';
         }).catch(function(){});
     }
     document.getElementById('s-box').addEventListener('keypress', function(e) {
