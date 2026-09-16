@@ -37,17 +37,14 @@
     <div class="title">Computer<span>Doctor</span></div>
     <div class="badge">Polen • Aer • Condiții Exterioare</div>
     <h2>Vezi ce este în aer înainte să <span>ieși din casă.</span></h2>
-    
-    <button class="act-btn" onclick="schimbaOras('Locația Ta')">
+    <button class="act-btn" onclick="initGPS()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
         <span>Folosește locația mea</span>
     </button>
-
     <div class="search-box">
         <span class="search-ic">🔍</span>
         <input type="text" class="search-in" id="s-box" placeholder="Scrie orașul și apasă Enter...">
     </div>
-    
     <div class="card">
         <div class="c-lbl" id="loc-lbl">Ambrozie acum (Craiova)</div>
         <div class="g-box">
@@ -56,16 +53,15 @@
                 <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#eab308" stroke-width="12" />
                 <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#f97316" stroke-width="12" />
                 <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
-                <g id="needle" style="transform-origin: 100px 90px; transition: transform 0.5s ease-in-out;">
+                <g id="needle" style="transform-origin: 100px 90px; transition: transform 0.5s ease-out; transform: rotate(0deg);">
                     <line x1="100" y1="90" x2="20" y2="90" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <circle cx="100" cy="90" r="6" fill="#ffffff" />
                 </g>
             </svg>
         </div>
-        <div class="val"><span id="p-num">1.7</span> <span class="unit">g/m³</span></div>
-        <div class="ind" id="badge-status" style="background-color: #22c55e;">Nivel Neglijabil / Aer Sigur</div>
+        <div class="val"><span id="p-num">0.0</span> <span class="unit">g/m³</span></div>
+        <div class="ind" id="badge-status" style="background-color: #22c55e;">Se încarcă...</div>
     </div>
-
     <div class="grid">
         <div class="m-card">
             <div class="m-lbl">Vizitatori azi</div>
@@ -76,17 +72,15 @@
             <div class="m-val">126 <span style="font-size:14px; opacity:0.5;">🔎</span></div>
         </div>
     </div>
-
     <div class="c-box" style="text-align: left;">
         <div class="c-lbl">Localități populare</div>
         <div class="pop-table">
-            <div class="pop-row" onclick="schimbaOras('București')"><div class="pop-rank">1</div><div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div><div class="pop-count">157 <span>verificări</span></div></div>
-            <div class="pop-row" onclick="schimbaOras('Craiova')"><div class="pop-rank">2</div><div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div><div class="pop-count">67 <span>verificări</span></div></div>
-            <div class="pop-row" onclick="schimbaOras('Iași')"><div class="pop-rank">3</div><div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div><div class="pop-count">49 <span>verificări</span></div></div>
-            <div class="pop-row" onclick="schimbaOras('Pitești')"><div class="pop-rank">4</div><div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Argeș</div></div><div class="pop-count">36 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="getAPI(44.43,26.10,'București')"><div class="pop-rank">1</div><div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div><div class="pop-count">157 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="getAPI(44.33,23.79,'Craiova')"><div class="pop-rank">2</div><div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div><div class="pop-count">67 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="getAPI(47.16,27.60,'Iași')"><div class="pop-rank">3</div><div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div><div class="pop-count">49 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="getAPI(44.85,24.86,'Pitești')"><div class="pop-rank">4</div><div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Argeș</div></div><div class="pop-count">36 <span>verificări</span></div></div>
         </div>
     </div>
-
     <div class="c-box">
         <div class="c-lbl">Activitate • Ultimele 30 de zile</div>
         <div class="tot-b">1.361 <span>verificări</span></div>
@@ -100,32 +94,50 @@
         </div>
     </div>
 </div>
-
 <script>
-    function schimbaOras(nume) {
-        document.getElementById('loc-lbl').innerText = "Ambrozie acum (" + nume + ")";
-        var valoare = (Math.random() * 25).toFixed(1);
-        if (nume.toLowerCase().includes("pitesti")) valoare = "34.2";
-        if (nume.toLowerCase().includes("bucuresti")) valoare = "12.5";
-        
-        document.getElementById('p-num').innerText = valoare + ' ';
-        var el = document.getElementById('badge-status');
-        var needle = document.getElementById('needle');
-        
-        if (valoare >= 50) { el.innerText = "Concentrație Critică"; el.style.background = "#ef4444"; }
-        else if (valoare >= 10) { el.innerText = "Nivel Mediu / Alertă"; el.style.background = "#f97316"; }
-        else if (valoare >= 1.0) { el.innerText = "Nivel Neglijabil / Aer Sigur"; el.style.background = "#22c55e"; }
-        else { el.innerText = "Inexistent / Curat"; el.style.background = "#22c55e"; }
-        
-        var grade = (Math.min(valoare, 60) / 60) * 180;
-        needle.style.transform = "rotate(" + grade + "deg)";
+    function initGPS() {
+        document.getElementById('badge-status').innerText = "Localizare...";
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) { 
+                getAPI(pos.coords.latitude, pos.coords.longitude, "Locația Ta"); 
+            }, function() { getAPI(44.33, 23.79, "Craiova"); });
+        } else { getAPI(44.33, 23.79, "Craiova"); }
     }
-    
+    function searchCity() {
+        var txt = document.getElementById('s-box').value;
+        if(!txt) return;
+        document.getElementById('badge-status').innerText = "Căutare...";
+        var geoUrl = 'https://open-meteo.com' + encodeURIComponent(txt) + '&count=1&language=ro';
+        fetch(geoUrl).then(function(r){return r.json();}).then(function(d){
+            if(d.results && d.results.length > 0) {
+                var res = d.results[0];
+                getAPI(res.latitude, res.longitude, res.name);
+            } else { document.getElementById('badge-status').innerText = "Oraș negăsit"; }
+        });
+    }
+    function getAPI(lat, lon, label) {
+        document.getElementById('loc-lbl').innerText = "Ambrozie acum (" + label + ")";
+        var queryUrl = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
+        fetch(queryUrl).then(function(r){return r.json();}).then(function(d){
+            var pVal = 0;
+            if(d && d.hourly) {
+                var idx = new Date().getHours();
+                pVal = d.hourly.ragweed_pollen[idx] || 0;
+            }
+            document.getElementById('p-num').innerText = pVal.toFixed(1) + ' ';
+            var el = document.getElementById('badge-status');
+            if(pVal >= 50){el.innerText="Concentrație Critică"; el.style.background="#ef4444";}
+            else if(pVal >= 10){el.innerText="Nivel Mediu / Alertă"; el.style.background="#f97316";}
+            else if(pVal >= 0.1){el.innerText="Nivel Neglijabil / Aer Sigur"; el.style.background="#22c55e";}
+            else{el.innerText="Inexistent / Curat"; el.style.background="#22c55e";}
+            var degrees = (Math.min(pVal, 60) / 60) * 180;
+            document.getElementById('needle').style.transform = 'rotate(' + degrees + 'deg)';
+        }).catch(function(){});
+    }
     document.getElementById('s-box').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') { schimbaOras(this.value); this.value = ''; }
+        if (e.key === 'Enter') { searchCity(); }
     });
-    
-    window.onload = function() { schimbaOras('Craiova'); };
+    window.onload = function() { getAPI(44.33, 23.79, 'Craiova'); };
 </script>
 </body>
 </html>
