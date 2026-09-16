@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computer Doctor — prognoză de polen</title>
+    <title>Computer Doctor — Monitorizare Polen & Alergii</title>
     <link rel="stylesheet" href="stil.css">
 </head>
 <body>
+
 <div class="exantha-app">
     <div class="top-bar">
-        <div class="brand-name">ExanthaPolen <span>* & alergii</span></div>
+        <div class="brand-name">Computer Doctor <span>* medical air analytics</span></div>
         <div class="lang-selector">
             <button onclick="setLanguage('ro')">RO</button> | <button onclick="setLanguage('en')">EN</button>
         </div>
     </div>
+
     <h1 id="main-headline">Respiră informat.</h1>
     <p id="main-sub" class="subtitle">Prognoze pentru polen adaptate locației tale, prezentate simplu.</p>
+
     <button class="btn-location" onclick="getLocation()">⌖ <span id="btn-text">Folosește locația mea</span></button>
+
     <div class="data-panel">
         <div id="panel-tag" class="panel-title">Ambrozie acum</div>
         <div class="gauge-container">
@@ -34,14 +38,17 @@
         <div class="value-display"><span id="pollen-number">--</span> <span class="unit" id="unit-text">grăuncioare/m³</span></div>
         <div id="status-tag" class="status-badge" style="background-color: #999999;">Se încarcă...</div>
     </div>
-    <div class="footer-notice" id="footer-text">Date securizate preluate prin Open-Meteo CAMS.</div>
+
+    <div class="footer-notice" id="footer-text">Sistem dezvoltat de Computer Doctor. Date preluate securizat prin Copernicus CAMS.</div>
 </div>
+
 <script>
     var currentLang = 'ro'; var lastPollenValue = 0;
     var translations = {
         ro: { headline: "Respiră informat.", sub: "Prognoze adaptate locației tale.", btn: "Folosește locația mea", panel: "Ambrozie acum", unit: "grăuncioare/m³", loading: "Se încarcă...", none: "Inexistent", low: "Scăzut", med: "Mediu", high: "Critic" },
         en: { headline: "Breathe informed.", sub: "Forecasts tailored to your location.", btn: "Use my location", panel: "Ragweed now", unit: "grains/m³", loading: "Loading...", none: "None", low: "Low", med: "Medium", high: "Critical" }
     };
+
     function setLanguage(lang) {
         currentLang = lang;
         document.getElementById('main-headline').innerText = translations[lang].headline;
@@ -51,13 +58,15 @@
         document.getElementById('unit-text').innerText = translations[lang].unit;
         interpretPollen(lastPollenValue);
     }
+
     function getLocation() {
         document.getElementById('status-tag').innerText = translations[currentLang].loading;
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(pos) { fetchPollen(pos.coords.latitude, pos.coords.longitude); }, function() { fetchPollen(44.43, 26.10); });
         } else { fetchPollen(44.43, 26.10); }
     }
-        function fetchPollen(lat, lon) {
+
+    function fetchPollen(lat, lon) {
         var apiUrl = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
         var proxyUrl = 'https://allorigins.win' + encodeURIComponent(apiUrl);
         
@@ -74,3 +83,16 @@
             document.getElementById('needle-group').setAttribute('transform', 'rotate(' + degrees + ', 100, 90)');
         }).catch(function() { document.getElementById('status-tag').innerText = "API Error"; });
     }
+
+    function interpretPollen(val) {
+        var b = document.getElementById('status-tag');
+        if (val >= 50) { b.innerText = translations[currentLang].high; b.style.backgroundColor = "#F44336"; }
+        else if (val >= 10) { b.innerText = translations[currentLang].med; b.style.backgroundColor = "#FF9800"; }
+        else if (val >= 1) { b.innerText = translations[currentLang].low; b.style.backgroundColor = "#FFC107"; }
+        else { b.innerText = translations[currentLang].none; b.style.backgroundColor = "#4CAF50"; }
+    }
+
+    window.onload = function() { setLanguage('ro'); getLocation(); };
+</script>
+</body>
+</html>
