@@ -3,96 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computer Doctor — Monitorizare Polen & Alergii</title>
+    <title>Computer Doctor — Monitorizare Aer & Polen</title>
     <link rel="stylesheet" href="stil.css">
 </head>
 <body>
 
-<div class="exantha-app">
-    <div class="top-bar">
-        <div class="brand-name">Computer Doctor <span>* medical air analytics</span></div>
-        <div class="lang-selector">
-            <button onclick="setLanguage('ro')">RO</button> | <button onclick="setLanguage('en')">EN</button>
+<div class="exantha-container">
+    <div class="top-nav">
+        <div class="logo-section">
+            <div class="main-title">Computer<span>Doctor</span></div>
+            <div class="sub-title">Medical Air Analytics</div>
         </div>
+        <button class="lang-btn" id="lang-toggle" onclick="toggleLanguage()">EN</button>
     </div>
 
-    <h1 id="main-headline">Respiră informat.</h1>
-    <p id="main-sub" class="subtitle">Prognoze pentru polen adaptate locației tale, prezentate simplu.</p>
+    <div class="badge-header" id="badge-text">Polen • Aer • Condiții Exterioare</div>
 
-    <button class="btn-location" onclick="getLocation()">⌖ <span id="btn-text">Folosește locația mea</span></button>
+    <h2>Vezi ce este în aer înainte să <span>ieși din casă.</span></h2>
 
-    <div class="data-panel">
-        <div id="panel-tag" class="panel-title">Ambrozie acum</div>
-        <div class="gauge-container">
-            <svg width="200" height="110">
-                <path d="M 20 90 A 80 80 0 0 1 50 30" fill="none" stroke="#4CAF50" stroke-width="12" stroke-linecap="round"/>
-                <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#FFC107" stroke-width="12" />
-                <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#FF9800" stroke-width="12" />
-                <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#F44336" stroke-width="12" stroke-linecap="round"/>
-                <g id="needle-group">
-                    <line x1="100" y1="90" x2="20" y2="90" stroke="#333333" stroke-width="4" stroke-linecap="round" />
-                    <circle cx="100" cy="90" r="6" fill="#333333" />
+    <button class="action-btn" onclick="fetchUserLocation()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="btn-text">Folosește locația mea</span>
+    </button>
+
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="search-box" placeholder="Caută localitatea..." readonly onclick="fetchUserLocation()">
+    </div>
+
+    <div class="analytics-card">
+        <div class="card-label" id="panel-title">Ambrozie acum</div>
+        <div class="gauge-box">
+            <svg width="180" height="100" viewBox="0 0 200 110">
+                <path d="M 20 90 A 80 80 0 0 1 50 30" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#eab308" stroke-width="12" />
+                <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#f97316" stroke-width="12" />
+                <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
+                <g id="needle-pointer" transform="rotate(0, 100, 90)">
+                    <line x1="100" y1="90" x2="20" y2="90" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+                    <circle cx="100" cy="90" r="6" fill="#ffffff" />
                 </g>
             </svg>
         </div>
-        <div class="value-display"><span id="pollen-number">--</span> <span class="unit" id="unit-text">grăuncioare/m³</span></div>
-        <div id="status-tag" class="status-badge" style="background-color: #999999;">Se încarcă...</div>
+        <div class="value-display">
+            <span id="pollen-display">--</span>
+            <span class="metric-unit" id="unit-display">g/m³</span>
+        </div>
+        <div class="status-indicator" id="status-badge" style="background-color: #242f41;">Locație neinițializată</div>
     </div>
-
-    <div class="footer-notice" id="footer-text">Sistem dezvoltat de Computer Doctor. Date preluate securizat prin Copernicus CAMS.</div>
 </div>
 
 <script>
-    var currentLang = 'ro'; var lastPollenValue = 0;
-    var translations = {
-        ro: { headline: "Respiră informat.", sub: "Prognoze adaptate locației tale.", btn: "Folosește locația mea", panel: "Ambrozie acum", unit: "grăuncioare/m³", loading: "Se încarcă...", none: "Inexistent", low: "Scăzut", med: "Mediu", high: "Critic" },
-        en: { headline: "Breathe informed.", sub: "Forecasts tailored to your location.", btn: "Use my location", panel: "Ragweed now", unit: "grains/m³", loading: "Loading...", none: "None", low: "Low", med: "Medium", high: "Critical" }
+    var currentLanguage = 'ro';
+    var globalPollenValue = 0;
+
+    var dict = {
+        ro: {
+            badge: "Polen • Aer • Condiții Exterioare",
+            btn: "Folosește locația mea",
+            search: "Caută localitatea...",
+            panel: "Ambrozie acum",
+            unit: "grăuncioare/m³",
+            none: "Inexistent", low: "Scăzut", med: "Mediu", high: "Critic"
+        },
+        en: {
+            badge: "Pollen • Air • Outdoor Conditions",
+            btn: "Use my location",
+            search: "Search location...",
+            panel: "Ragweed now",
+            unit: "grains/m³",
+            none: "None", low: "Low", med: "Medium", high: "Critical"
+        }
     };
 
-    function setLanguage(lang) {
-        currentLang = lang;
-        document.getElementById('main-headline').innerText = translations[lang].headline;
-        document.getElementById('main-sub').innerText = translations[lang].sub;
-        document.getElementById('btn-text').innerText = translations[lang].btn;
-        document.getElementById('panel-tag').innerText = translations[lang].panel;
-        document.getElementById('unit-text').innerText = translations[lang].unit;
-        interpretPollen(lastPollenValue);
-    }
-
-    function getLocation() {
-        document.getElementById('status-tag').innerText = translations[currentLang].loading;
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(pos) { fetchPollen(pos.coords.latitude, pos.coords.longitude); }, function() { fetchPollen(44.43, 26.10); });
-        } else { fetchPollen(44.43, 26.10); }
-    }
-
-    function fetchPollen(lat, lon) {
-        var apiUrl = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
-        var proxyUrl = 'https://allorigins.win' + encodeURIComponent(apiUrl);
+    function toggleLanguage() {
+        currentLanguage = (currentLanguage === 'ro') ? 'en' : 'ro';
+        document.getElementById('lang-toggle').innerText = (currentLanguage === 'ro') ? 'EN' : 'RO';
         
-        fetch(proxyUrl).then(function(res) { return res.json(); }).then(function(wrapper) {
-            var data = JSON.parse(wrapper.contents);
-            var now = new Date();
-            var currentHourStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + 'T' + String(now.getHours()).padStart(2,'0') + ':00';
-            var index = data.hourly.time.indexOf(currentHourStr);
-            lastPollenValue = data.hourly.ragweed_pollen[index >= 0 ? index : 0] || 0;
+        document.getElementById('badge-text').innerText = dict[currentLanguage].badge;
+        document.getElementById('btn-text').innerText = dict[currentLanguage].btn;
+        document.getElementById('search-box').placeholder = dict[currentLanguage].search;
+        document.getElementById('panel-title').innerText = dict[currentLanguage].panel;
+        document.getElementById('unit-display').innerText = dict[currentLanguage].unit;
+        
+        renderPollenUI(globalPollenValue);
+    }
+
+    function fetchUserLocation() {
+        document.getElementById('status-badge').innerText = (currentLanguage === 'ro') ? "Localizare..." : "Locating...";
+        document.getElementById('status-badge').style.backgroundColor = "#242f41";
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                queryOpenMeteo(position.coords.latitude, position.coords.longitude);
+            }, function() {
+                queryOpenMeteo(44.4323, 26.1063); // Coordonate implicite de siguranță
+            });
+        } else {
+            queryOpenMeteo(44.4323, 26.1063);
+        }
+    }
+
+    function queryOpenMeteo(lat, lon) {
+        var endpoint = 'https://open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';
+        
+        fetch(endpoint, { mode: 'cors' })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var timeStamp = new Date();
+            var targetHour = timeStamp.getFullYear() + '-' + String(timeStamp.getMonth()+1).padStart(2,'0') + '-' + String(timeStamp.getDate()).padStart(2,'0') + 'T' + String(timeStamp.getHours()).padStart(2,'0') + ':00';
             
-            document.getElementById('pollen-number').innerText = lastPollenValue.toFixed(1) + ' ';
-            interpretPollen(lastPollenValue);
-            var degrees = (Math.min(lastPollenValue, 60) / 60) * 180;
-            document.getElementById('needle-group').setAttribute('transform', 'rotate(' + degrees + ', 100, 90)');
-        }).catch(function() { document.getElementById('status-tag').innerText = "API Error"; });
+            var schedule = data.hourly.time;
+            var values = data.hourly.ragweed_pollen;
+            var pos = schedule.indexOf(targetHour);
+            var activePos = pos >= 0 ? pos : 0;
+            
+            globalPollenValue = values[activePos] || 0;
+            
+            document.getElementById('pollen-display').innerText = globalPollenValue.toFixed(1) + ' ';
+            renderPollenUI(globalPollenValue);
+            
+            var ratio = Math.min(globalPollenValue, 60) / 60;
+            var angleInDegrees = ratio * 180;
+            document.getElementById('needle-pointer').setAttribute('transform', 'rotate(' + angleInDegrees + ', 100, 90)');
+        })
+        .catch(function() {
+            document.getElementById('status-badge').innerText = "API Error";
+            document.getElementById('status-badge').style.backgroundColor = "#ef4444";
+        });
     }
 
-    function interpretPollen(val) {
-        var b = document.getElementById('status-tag');
-        if (val >= 50) { b.innerText = translations[currentLang].high; b.style.backgroundColor = "#F44336"; }
-        else if (val >= 10) { b.innerText = translations[currentLang].med; b.style.backgroundColor = "#FF9800"; }
-        else if (val >= 1) { b.innerText = translations[currentLang].low; b.style.backgroundColor = "#FFC107"; }
-        else { b.innerText = translations[currentLang].none; b.style.backgroundColor = "#4CAF50"; }
+    function renderPollenUI(val) {
+        var element = document.getElementById('status-badge');
+        if (val >= 50) {
+            element.innerText = dict[currentLanguage].high;
+            element.style.backgroundColor = "#ef4444";
+        } else if (val >= 10) {
+            element.innerText = dict[currentLanguage].med;
+            element.style.backgroundColor = "#f97316";
+        } else if (val >= 1) {
+            element.innerText = dict[currentLanguage].low;
+            element.style.backgroundColor = "#eab308";
+        } else {
+            element.innerText = dict[currentLanguage].none;
+            element.style.backgroundColor = "#22c55e";
+        }
     }
 
-    window.onload = function() { setLanguage('ro'); getLocation(); };
+    window.onload = function() {
+        fetchUserLocation();
+    };
 </script>
 </body>
 </html>
