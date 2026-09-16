@@ -9,6 +9,13 @@
         body { background-color: var(--bg-m); color: var(--txt-p); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
         .app-box { width: 100%; max-width: 440px; background: #0f1422; padding: 20px; box-sizing: border-box; border-radius: 24px; border: 1px solid var(--b-col); }
         .title { font-size: 20px; font-weight: 800; margin-bottom: 20px; } .title span { color: var(--neon); }
+        .sub { font-size: 10px; color: var(--txt-s); text-transform: uppercase; margin-top: 2px; }
+        .badge { background: rgba(64,192,87,0.15); color: var(--neon); font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 20px; display: inline-block; text-transform: uppercase; margin-bottom: 15px; }
+        h2 { font-size: 24px; font-weight: 800; line-height: 1.3; margin: 0 0 15px 0; } h2 span { color: var(--neon); }
+        .act-btn { background: #fff; color: #000; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .search-box { position: relative; margin: 15px 0; }
+        .search-in { width: 100%; background: var(--bg-c); border: 1px solid var(--b-col); padding: 12px 12px 12px 35px; border-radius: 12px; color: #fff; box-sizing: border-box; font-size: 13px; }
+        .search-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--txt-s); }
         .card, .c-box, .m-card { background: var(--bg-c); border: 1px solid var(--b-col); border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 15px; }
         .c-lbl { font-size: 11px; font-weight: 700; color: var(--txt-s); text-transform: uppercase; text-align: left; margin-bottom: 8px; }
         .g-box { width: 160px; height: 90px; margin: 10px auto 0 auto; }
@@ -16,7 +23,7 @@
         .ind { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; margin-top: 10px; }
         .grid { display: flex; gap: 12px; } .m-card { flex: 1; padding: 12px; text-align: left; margin-bottom: 15px; }
         .m-lbl { font-size: 10px; color: var(--txt-s); font-weight: 600; text-transform: uppercase; }
-        .m-val { font-size: 20px; font-weight: 800; margin-top: 5px; display: flex; justify-content: space-between; }
+        .m-val { font-size: 20px; font-weight: 800; margin-top: 5px; display: flex; justify-content: space-between; align-items: center; }
         .tot-b { font-size: 22px; font-weight: 800; margin: 5px 0 12px 0; text-align: left; } .tot-b span { font-size: 12px; color: var(--txt-s); font-weight: 400; }
         .pop-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
         .pop-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--b-col); }
@@ -24,12 +31,30 @@
         .pop-rank { background: var(--b-col); color: var(--neon); font-weight: 700; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 11px; margin-right: 12px; }
         .pop-info { flex: 1; } .pop-name { font-size: 14px; font-weight: 700; } .pop-region { font-size: 11px; color: var(--txt-s); }
         .pop-count { font-size: 13px; font-weight: 700; text-align: right; } .pop-count span { font-size: 10px; color: var(--txt-s); font-weight: 400; display: block; }
-        .ch-box-svg { width: 100%; height: 130px; margin-top: 15px; display: block; }
+        .ch-box-svg { width: 100%; height: 110px; margin-top: 15px; display: block; }
     </style>
 </head>
 <body>
 <div class="app-box">
-    <div class="title">Computer<span>Doctor</span></div>
+    <div class="nav">
+        <div>
+            <div class="title">Computer<span>Doctor</span></div>
+            <div class="sub">Medical Air Analytics</div>
+        </div>
+    </div>
+    
+    <div class="badge">Polen • Aer • Condiții Exterioare</div>
+    <h2>Vezi ce este în aer înainte să <span>ieși din casă.</span></h2>
+
+    <button class="act-btn" onclick="initGPS()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Folosește locația mea</span>
+    </button>
+
+    <div class="search-box">
+        <span class="search-ic">🔍</span>
+        <input type="text" class="search-in" id="s-box" placeholder="Caută localitatea..." readonly onclick="initGPS()">
+    </div>
     
     <div class="card">
         <div class="c-lbl">Ambrozie acum</div>
@@ -46,7 +71,7 @@
             </svg>
         </div>
         <div class="val"><span id="p-num">0.0</span> <span class="unit">g/m³</span></div>
-        <div class="ind" id="badge-status" style="background-color: #22c55e;">Inexistent</div>
+        <div class="ind" id="badge-status" style="background-color: #22c55e;">Se încarcă...</div>
     </div>
 
     <div class="grid">
@@ -60,7 +85,6 @@
         </div>
     </div>
 
-    <!-- Reintrodus tabelul cu localități din prima imagine -->
     <div class="c-box" style="text-align: left;">
         <div class="c-lbl">Localități populare</div>
         <div class="pop-table">
@@ -91,12 +115,11 @@
         <div class="c-lbl">Activitate • Ultimele 30 de zile</div>
         <div class="tot-b">1.361 <span>verificări</span></div>
         <div class="ch-box-svg">
-            <!-- Corectat dimensiunile graficului SVG pentru randare perfectă pe computere -->
-            <svg width="100%" height="130" viewBox="0 0 350 120" style="display:block;">
+            <svg width="100%" height="110" viewBox="0 0 350 120" style="display:block;">
                 <path d="M 10 110 Q 70 80 130 95 T 250 20 T 340 70" fill="none" stroke="#40c057" stroke-width="3"></path>
                 <path d="M 10 110 Q 70 80 130 95 T 250 20 T 340 70 L 340 120 L 10 120 Z" fill="rgba(64,192,87,0.08)"></path>
                 <circle cx="250" cy="20" r="5" fill="#40c057"></circle>
-                <line x1="0" y1="118" x2="350" y2="118" stroke="#242f41" stroke-width="15"></line>
+                <line x1="0" y1="118" x2="350" y2="118" stroke="#242f41" stroke-width="2"></line>
             </svg>
         </div>
     </div>
@@ -110,16 +133,15 @@
             var pVal = d.hourly.ragweed_pollen[idx >= 0 ? idx : 0] || 0;
             document.getElementById('p-num').innerText = pVal.toFixed(1) + ' ';
             var el = document.getElementById('badge-status');
-            if(pVal >= 50){el.innerText="Critic"; el.style.background="#ef4444";}
-            else if(pVal >= 10){el.innerText="Mediu"; el.style.background="#f97316";}
-            else if(pVal >= 1){el.innerText="Scăzut"; el.style.background="#eab308";}
-            else{el.innerText="Inexistent"; el.style.background="#22c55e";}
+            
+            // Scalare descriptivă corectă pentru cantități mici conform cerinței tale
+            if(pVal >= 50){el.innerText="Concentrație Critică"; el.style.background="#ef4444";}
+            else if(pVal >= 10){el.innerText="Nivel Mediu / Alertă"; el.style.background="#f97316";}
+            else if(pVal >= 0.1){el.innerText="Nivel Neglijabil / Aer Sigur"; el.style.background="#22c55e";}
+            else{el.innerText="Inexistent / Curat"; el.style.background="#22c55e";}
+            
             document.getElementById('needle').setAttribute('transform', 'rotate('+((Math.min(pVal,60)/60)*180)+',100,90)');
-        }).catch(function(){
-            var bk = Math.random() * 2;
-            document.getElementById('p-num').innerText = bk.toFixed(1) + ' ';
-            document.getElementById('needle').setAttribute('transform', 'rotate('+((bk/60)*180)+',100,90)');
-        });
+        }).catch(function(){});
     }
     window.onload = function() { getAPI(); };
 </script>
