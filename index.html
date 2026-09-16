@@ -7,153 +7,75 @@
     <script src="https://jsdelivr.net"></script>
     <style>
         :root { --bg-m: #0b0f19; --bg-c: #161c2a; --txt-p: #ffffff; --txt-s: #94a3b8; --neon: #40c057; --b-col: #242f41; }
-        body { background-color: var(--bg-m); color: var(--txt-p); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
+        body { background-color: var(--bg-m); color: var(--txt-p); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
         .app-box { width: 100%; max-width: 440px; background: #0f1422; padding: 20px; box-sizing: border-box; border-radius: 24px; border: 1px solid var(--b-col); }
-        .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .title { font-size: 20px; font-weight: 800; } .title span { color: var(--neon); }
-        .sub { font-size: 10px; color: var(--txt-s); text-transform: uppercase; letter-spacing: 0.5px; }
-        .l-btn { background: var(--bg-c); border: 1px solid var(--b-col); color: var(--txt-p); padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 700; cursor: pointer; }
-        .badge { background: rgba(64,192,87,0.15); color: var(--neon); font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 20px; display: inline-block; text-transform: uppercase; margin-bottom: 15px; }
-        h2 { font-size: 24px; font-weight: 800; line-height: 1.3; margin: 0 0 15px 0; } h2 span { color: var(--neon); }
-        .act-btn { background: #fff; color: #000; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .search-box { position: relative; margin: 15px 0; }
-        .search-in { width: 100%; background: var(--bg-c); border: 1px solid var(--b-col); padding: 12px 12px 12px 35px; border-radius: 12px; color: #fff; box-sizing: border-box; font-size: 13px; }
-        .search-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
-        .card, .c-box, .m-card { background: var(--bg-c); border: 1px solid var(--b-col); border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 15px; }
+        .title { font-size: 20px; font-weight: 800; margin-bottom: 20px; } .title span { color: var(--neon); }
+        .card, .c-box { background: var(--bg-c); border: 1px solid var(--b-col); border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 15px; }
         .c-lbl { font-size: 11px; font-weight: 700; color: var(--txt-s); text-transform: uppercase; text-align: left; margin-bottom: 8px; }
         .g-box { width: 160px; height: 90px; margin: 10px auto 0 auto; }
         .val { font-size: 36px; font-weight: 800; margin-top: 5px; } .unit { font-size: 12px; color: var(--txt-s); }
         .ind { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; margin-top: 10px; }
-        .grid { display: flex; gap: 12px; } .m-card { flex: 1; padding: 12px; text-align: left; margin-bottom: 15px; }
-        .m-lbl { font-size: 10px; color: var(--txt-s); font-weight: 600; text-transform: uppercase; }
-        .m-val { font-size: 20px; font-weight: 800; margin-top: 5px; display: flex; justify-content: space-between; }
-        .tot-b { font-size: 22px; font-weight: 800; margin: 5px 0 12px 0; text-align: left; } .tot-b span { font-size: 12px; color: var(--txt-s); font-weight: 400; }
+        .tot-b { font-size: 22px; font-weight: 800; margin: 5px 0 12px 0; text-align: left; } .tot-b span { font-size: 12px; color: var(--txt-s); }
         .ch-cont { width: 100%; height: 130px; position: relative; }
-        
-        /* Stiluri tabel localități populare conform Imaginii 1 */
-        .pop-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
-        .pop-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--b-col); }
-        .pop-row:last-child { border-bottom: none; }
-        .pop-rank { background: var(--b-col); color: var(--neon); font-weight: 700; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 11px; margin-right: 12px; }
-        .pop-info { flex: 1; }
-        .pop-name { font-size: 14px; font-weight: 700; }
-        .pop-region { font-size: 11px; color: var(--txt-s); }
-        .pop-count { font-size: 13px; font-weight: 700; text-align: right; }
-        .pop-count span { font-size: 10px; color: var(--txt-s); font-weight: 400; display: block; }
     </style>
 </head>
 <body>
-
 <div class="app-box">
-    <div class="nav">
-        <div>
-            <div class="title">Computer<span>Doctor</span></div>
-            <div class="sub">Medical Air Analytics</div>
-        </div>
-        <button class="l-btn" id="lang-btn" onclick="switchLang()">EN</button>
-    </div>
-
-    <div class="badge" id="b-text">Polen • Aer • Condiții Exterioare</div>
-    <h2 id="h-text">Vezi ce este în aer înainte să <span>ieși din casă.</span></h2>
-
-    <button class="act-btn" onclick="initGPS()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-        <span id="btn-text">Folosește locația mea</span>
-    </button>
-
-    <div class="search-box">
-        <span class="search-ic">🔍</span>
-        <input type="text" class="search-in" id="s-box" placeholder="Caută localitatea..." readonly onclick="initGPS()">
-    </div>
-
+    <div class="title">Computer<span>Doctor</span></div>
+    
     <div class="card">
-        <div class="c-lbl" id="lbl-text">Ambrozie acum</div>
+        <div class="c-lbl">Ambrozie acum</div>
         <div class="g-box">
             <svg width="160" height="90" viewBox="0 0 200 110">
                 <path d="M 20 90 A 80 80 0 0 1 50 30" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round"/>
                 <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#eab308" stroke-width="12" />
                 <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#f97316" stroke-width="12" />
                 <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
-                <g id="needle" transform="rotate(0, 100, 90)">
+                <g id="needle">
                     <line x1="100" y1="90" x2="20" y2="90" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <circle cx="100" cy="90" r="6" fill="#ffffff" />
                 </g>
             </svg>
         </div>
-        <div class="val"><span id="p-num">0.0</span> <span class="unit" id="u-text">g/m³</span></div>
+        <div class="val"><span id="p-num">0.0</span> <span class="unit">g/m³</span></div>
         <div class="ind" id="badge-status" style="background-color: #22c55e;">Inexistent</div>
     </div>
 
-    <div class="grid">
-        <div class="m-card">
-            <div class="m-lbl" id="v-lbl">Vizitatori azi</div>
-            <div class="m-val">50 <span style="font-size:14px; opacity:0.5;">👤</span></div>
-        </div>
-        <div class="m-card">
-            <div class="m-lbl" id="c-lbl-2">Verificări azi</div>
-            <div class="m-val">126 <span style="font-size:14px; opacity:0.5;">🔎</span></div>
-        </div>
-    </div>
-
-    <!-- Tabel Localități Populare (Conform Imaginii 1) -->
-    <div class="c-box" style="text-align: left;">
-        <div class="c-lbl" id="pop-title">Localități populare</div>
-        <div class="pop-table">
-            <div class="pop-row">
-                <div class="pop-rank">1</div>
-                <div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div>
-                <div class="pop-count">157 <span>verificări</span></div>
-            </div>
-            <div class="pop-row">
-                <div class="pop-rank">2</div>
-                <div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div>
-                <div class="pop-count">67 <span>verificări</span></div>
-            </div>
-            <div class="pop-row">
-                <div class="pop-rank">3</div>
-                <div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div>
-                <div class="pop-count">49 <span>verificări</span></div>
-            </div>
-            <div class="pop-row">
-                <div class="pop-rank">4</div>
-                <div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Județul Argeș</div></div>
-                <div class="pop-count">36 <span>verificări</span></div>
-            </div>
-        </div>
-    </div>
-
     <div class="c-box">
-        <div class="c-lbl" id="g-lbl">Activitate • Ultimele 30 de zile</div>
-        <div class="tot-b">1.361 <span id="v-text">verificări</span></div>
+        <div class="c-lbl">Activitate • Ultimele 30 de zile</div>
+        <div class="tot-b">1.361 <span>verificări</span></div>
         <div class="ch-cont"><canvas id="chartCanvas"></canvas></div>
     </div>
 </div>
-
 <script>
-    var lng = 'ro'; var pVal = 0; var chart = null;
-    var labelsRo = ['18 aug', '24 aug', '30 aug', '3 sept', '11 sept', '16 sept'];
-    var labelsEn = ['Aug 18', 'Aug 24', 'Aug 30', 'Sep 3', 'Sep 11', 'Sep 16'];
-    var voc = {
-        ro: { b: "Polen • Aer • Condiții Exterioare", h: "Vezi ce este în aer înainte să <span>ieși din casă.</span>", btn: "Folosește locația mea", s: "Caută localitatea...", l: "Ambrozie acum", u: "grăuncioare/m³", vazi: "Vizitatori azi", vch: "Verificări azi", g: "Activitate • Ultimele 30 de zile", t: "verificări", n: "Inexistent", lw: "Scăzut", md: "Mediu", hg: "Critic", p: "Localități populare" },
-        en: { b: "Pollen • Air • Conditions", h: "See what's in the air before <span>leaving home.</span>", btn: "Use my location", s: "Search location...", l: "Ragweed now", u: "grains/m³", vazi: "Visitors today", vch: "Checks today", g: "Activity • Last 30 days", t: "checks", n: "None", lw: "Low", md: "Medium", hg: "Critical", p: "Popular locations" }
+    function getAPI() {
+        var url = 'https://open-meteo.com';
+        fetch(url).then(function(r){return r.json();}).then(function(d){
+            var n = new Date(); var hr = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+'T'+String(n.getHours()).padStart(2,'0')+':00';
+            var idx = d.hourly.time.indexOf(hr);
+            var pVal = d.hourly.ragweed_pollen[idx >= 0 ? idx : 0] || 0;
+            document.getElementById('p-num').innerText = pVal.toFixed(1) + ' ';
+            var el = document.getElementById('badge-status');
+            if(pVal >= 50){el.innerText="Critic"; el.style.background="#ef4444";}
+            else if(pVal >= 10){el.innerText="Mediu"; el.style.background="#f97316";}
+            else if(pVal >= 1){el.innerText="Scăzut"; el.style.background="#eab308";}
+            else{el.innerText="Inexistent"; el.style.background="#22c55e";}
+            document.getElementById('needle').setAttribute('transform', 'rotate('+((Math.min(pVal,60)/60)*180)+',100,90)');
+        }).catch(function(){});
+    }
+    window.onload = function() {
+        getAPI();
+        var ctx = document.getElementById('chartCanvas').getContext('2d');
+        var mock = new Array(5, 12, 8, 48, 15, 10);
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['18 aug', '24 aug', '30 aug', '3 sept', '11 sept', '16 sept'],
+                datasets: [{ data: mock, borderColor: '#40c057', borderWidth: 3, backgroundColor: 'rgba(64,192,87,0.05)', fill: true, tension: 0.4, pointRadius: 4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, y: { display: false } } }
+        });
     };
-
-    function switchLang() {
-        lng = (lng === 'ro') ? 'en' : 'ro';
-        document.getElementById('lang-btn').innerText = (lng === 'ro') ? 'EN' : 'RO';
-        document.getElementById('b-text').innerText = voc[lng].b;
-        document.getElementById('h-text').innerHTML = voc[lng].h;
-        document.getElementById('btn-text').innerText = voc[lng].btn;
-        document.getElementById('s-box').placeholder = voc[lng].s;
-        document.getElementById('lbl-text').innerText = voc[lng].l;
-        document.getElementById('u-text').innerText = voc[lng].u;
-        document.getElementById('v-lbl').innerText = voc[lng].vazi;
-        document.getElementById('c-lbl-2').innerText = voc[lng].vch;
-        document.getElementById('g-lbl').innerText = voc[lng].g;
-        document.getElementById('v-text').innerText = voc[lng].t;
-        document.getElementById('pop-title').innerText = voc[lng].p;
-        if(chart) { chart.data.labels = (lng === 'ro') ? labelsRo : labelsEn;
-                   chart.update();
-                  }uiUpdate(pVal);
-    }function initGPS() {if (navigator.geolocation) {navigator.geolocation.getCurrentPosition(function(pos) { getAPI(pos.coords.latitude, pos.coords.longitude);
-                                                                                                            }, function() { getAPI(44.43, 26.10); });} else { getAPI(44.43, 26.10); }}function getAPI(lat, lon) {var url = 'open-meteo.com' + lat + '&longitude=' + lon + '&hourly=ragweed_pollen&timezone=auto&forecast_days=1';fetch(url).then(function(r) { return r.json(); }).then(function(d) {var n = new Date(); var hr = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0') + 'T' + String(n.getHours()).padStart(2,'0') + ':00';var idx = d.hourly.time.indexOf(hr);pVal = d.hourly.ragweed_pollen[idx >= 0 ? idx : 0] || 0;document.getElementById('p-num').innerText = pVal.toFixed(1) + ' ';uiUpdate(pVal);document.getElementById('needle').setAttribute('transform', 'rotate(' + ((Math.min(pVal, 60)/60)*180) + ', 100, 90)');}).catch(function() {pVal = Math.random() * 3;document.getElementById('p-num').innerText = pVal.toFixed(1) + ' ';uiUpdate(pVal);document.getElementById('needle').setAttribute('transform', 'rotate(' + ((pVal/60)*180) + ', 100, 90)');});}function uiUpdate(v) {var el = document.getElementById('badge-status');if (v >= 50) { el.innerText = voc[lng].hg; el.style.background = "#ef4444"; }else if (v >= 10) { el.innerText = voc[lng].md; el.style.background = "#f97316"; }else if (v >= 1) { el.innerText = voc[lng].lw; el.style.background = "#eab308"; }else { el.innerText = voc[lng].n; el.style.background = "#22c55e"; }}window.onload = function() {switchLang(); switchLang(); initGPS();var ctx = document.getElementById('chartCanvas').getContext('2d');chart = new Chart(ctx, {type: 'line',data: {labels: labelsRo,datasets: [{ data:, borderColor: '#40c057', borderWidth: 3, backgroundColor: 'rgba(64, 192, 87, 0.05)', fill: true, tension: 0.4, pointRadius: 4 }]},options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, y: { display: false } } }});};
+</script>
+</body>
+</html>
