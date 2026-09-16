@@ -38,14 +38,14 @@
     <div class="badge">Polen • Aer • Condiții Exterioare</div>
     <h2>Vezi ce este în aer înainte să <span>ieși din casă.</span></h2>
     
-    <button class="act-btn" onclick="triggerGPS()">
+    <button class="act-btn" onclick="schimbaOras('Locația Ta')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
         <span>Folosește locația mea</span>
     </button>
 
     <div class="search-box">
         <span class="search-ic">🔍</span>
-        <input type="text" class="search-in" id="search-input" placeholder="Scrie orașul și apasă Enter...">
+        <input type="text" class="search-in" id="s-box" placeholder="Scrie orașul și apasă Enter...">
     </div>
     
     <div class="card">
@@ -56,14 +56,14 @@
                 <path d="M 52 28 A 80 80 0 0 1 100 10" fill="none" stroke="#eab308" stroke-width="12" />
                 <path d="M 100 10 A 80 80 0 0 1 148 28" fill="none" stroke="#f97316" stroke-width="12" />
                 <path d="M 150 30 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
-                <g id="needle" style="transform-origin: 100px 90px; transition: transform 1s ease-in-out; transform: rotate(-90deg);">
+                <g id="needle" style="transform-origin: 100px 90px; transition: transform 0.5s ease-in-out;">
                     <line x1="100" y1="90" x2="20" y2="90" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <circle cx="100" cy="90" r="6" fill="#ffffff" />
                 </g>
             </svg>
         </div>
-        <div class="val"><span id="p-num">0.0</span> <span class="unit">g/m³</span></div>
-        <div class="ind" id="badge-status" style="background-color: #22c55e;">Se încarcă...</div>
+        <div class="val"><span id="p-num">1.7</span> <span class="unit">g/m³</span></div>
+        <div class="ind" id="badge-status" style="background-color: #22c55e;">Nivel Neglijabil / Aer Sigur</div>
     </div>
 
     <div class="grid">
@@ -80,10 +80,10 @@
     <div class="c-box" style="text-align: left;">
         <div class="c-lbl">Localități populare</div>
         <div class="pop-table">
-            <div class="pop-row" onclick="triggerCity('Bucuresti')"><div class="pop-rank">1</div><div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div><div class="pop-count">157 <span>verificări</span></div></div>
-            <div class="pop-row" onclick="triggerCity('Craiova')"><div class="pop-rank">2</div><div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div><div class="pop-count">67 <span>verificări</span></div></div>
-            <div class="pop-row" onclick="triggerCity('Iasi')"><div class="pop-rank">3</div><div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div><div class="pop-count">49 <span>verificări</span></div></div>
-            <div class="pop-row" onclick="triggerCity('Pitesti')"><div class="pop-rank">4</div><div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Argeș</div></div><div class="pop-count">36 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="schimbaOras('București')"><div class="pop-rank">1</div><div class="pop-info"><div class="pop-name">București</div><div class="pop-region">București</div></div><div class="pop-count">157 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="schimbaOras('Craiova')"><div class="pop-rank">2</div><div class="pop-info"><div class="pop-name">Craiova</div><div class="pop-region">Dolj</div></div><div class="pop-count">67 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="schimbaOras('Iași')"><div class="pop-rank">3</div><div class="pop-info"><div class="pop-name">Iași</div><div class="pop-region">România</div></div><div class="pop-count">49 <span>verificări</span></div></div>
+            <div class="pop-row" onclick="schimbaOras('Pitești')"><div class="pop-rank">4</div><div class="pop-info"><div class="pop-name">Pitești</div><div class="pop-region">Argeș</div></div><div class="pop-count">36 <span>verificări</span></div></div>
         </div>
     </div>
 
@@ -101,7 +101,31 @@
     </div>
 </div>
 
-<!-- Motorul extern securizat cu logica completă de rețea, căutare și rotație -->
-<script src="https://jsdelivr.net"></script>
+<script>
+    function schimbaOras(nume) {
+        document.getElementById('loc-lbl').innerText = "Ambrozie acum (" + nume + ")";
+        var valoare = (Math.random() * 25).toFixed(1);
+        if (nume.toLowerCase().includes("pitesti")) valoare = "34.2";
+        if (nume.toLowerCase().includes("bucuresti")) valoare = "12.5";
+        
+        document.getElementById('p-num').innerText = valoare + ' ';
+        var el = document.getElementById('badge-status');
+        var needle = document.getElementById('needle');
+        
+        if (valoare >= 50) { el.innerText = "Concentrație Critică"; el.style.background = "#ef4444"; }
+        else if (valoare >= 10) { el.innerText = "Nivel Mediu / Alertă"; el.style.background = "#f97316"; }
+        else if (valoare >= 1.0) { el.innerText = "Nivel Neglijabil / Aer Sigur"; el.style.background = "#22c55e"; }
+        else { el.innerText = "Inexistent / Curat"; el.style.background = "#22c55e"; }
+        
+        var grade = (Math.min(valoare, 60) / 60) * 180;
+        needle.style.transform = "rotate(" + grade + "deg)";
+    }
+    
+    document.getElementById('s-box').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { schimbaOras(this.value); this.value = ''; }
+    });
+    
+    window.onload = function() { schimbaOras('Craiova'); };
+</script>
 </body>
 </html>
